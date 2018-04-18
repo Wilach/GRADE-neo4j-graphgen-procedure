@@ -103,6 +103,20 @@ public class GraphGenerator {
 
         return new GraphResult(nodes, relationships);
     }
+    
+    public List<Node> asdGenerateNodeTest(Label[] labels, String propertiesString, long number){
+    	
+    	 List<Node> nodes = new ArrayList<>();
+         for (int i = 0; i < number; ++i) {
+             Node node = database.createNode(labels);
+             for (Property property : getProperties(propertiesString)) {
+                 node.setProperty(property.key(), "TestString");
+             }
+             nodes.add(node);
+         }
+
+         return nodes;
+    }
 
     private List<Property> getProperties(String definition) {
         if (definition.equals("''") || definition.equals("'{}'") || definition.equals("") || definition.equals("{}")) {

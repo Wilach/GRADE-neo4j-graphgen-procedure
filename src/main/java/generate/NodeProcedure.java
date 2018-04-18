@@ -36,6 +36,6 @@ public class NodeProcedure extends GraphgenProcedure {
     @PerformsWrites
     public Stream<NodeListResult> nodes(@Name("labels") Object labels, @Name("properties") String propertyString, @Name("number") Long number) {
         log.warn(number.toString());
-        return Stream.of(new NodeListResult(getGraphgenService().graphGenerator().generateNodes(LabelsUtil.fromInput(labels), propertyString, number)));
+        return Stream.of(new NodeListResult(getGraphgenService().graphGenerator().asdGenerateNodeTest(LabelsUtil.fromInput(labels), propertyString, number)));
     }
 }

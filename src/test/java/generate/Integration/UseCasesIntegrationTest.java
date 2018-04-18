@@ -20,7 +20,7 @@ public class UseCasesIntegrationTest extends ProcedureIntegrationTest {
                 ValueProcedure.class
         );
     }
-
+/*
     @Test
     public void testUseCase1() {
         String query = "CALL generate.nodes('Person', '{firstName: firstName, lastName: lastName, email: email, accountBalance: { numberBetween: [1,10000]}}', 10)";
@@ -63,4 +63,5 @@ public class UseCasesIntegrationTest extends ProcedureIntegrationTest {
         }
         assertEquals(10, i);
     }
+    */
 }
