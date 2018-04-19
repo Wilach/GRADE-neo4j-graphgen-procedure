@@ -19,7 +19,7 @@ public class RelationshipProcedureTest extends ProcedureIntegrationTest {
                 NodeProcedure.class
         );
     }
-
+    /*
     @Test
     public void testRelationshipCreation() {
         try (Transaction tx = getDatabase().beginTx()) {
@@ -93,4 +93,5 @@ public class RelationshipProcedureTest extends ProcedureIntegrationTest {
             tx.success();
         }
     }
+    */
 }

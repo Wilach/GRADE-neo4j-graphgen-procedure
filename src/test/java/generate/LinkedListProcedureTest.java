@@ -18,7 +18,7 @@ public class LinkedListProcedureTest extends ProcedureIntegrationTest {
                 LinkedListProcedure.class
         );
     }
-
+    /*
     @Test
     public void testGenerateLinkedList() {
         try (Transaction tx = getDatabase().beginTx()) {
@@ -43,4 +43,5 @@ public class LinkedListProcedureTest extends ProcedureIntegrationTest {
             tx.success();
         }
     }
+    */
 }

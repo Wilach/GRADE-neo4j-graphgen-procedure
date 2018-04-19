@@ -18,7 +18,7 @@ public class ValueProcedureTest extends ProcedureIntegrationTest {
                 ValueProcedure.class
         );
     }
-
+    /*
     @Test
     public void testGenerateValueWithoutParameters() {
         try (Transaction tx = getDatabase().beginTx()) {
@@ -50,4 +50,5 @@ public class ValueProcedureTest extends ProcedureIntegrationTest {
             tx.success();
         }
     }
+    */
 }

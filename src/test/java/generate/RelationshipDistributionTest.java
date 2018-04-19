@@ -18,7 +18,7 @@ public class RelationshipDistributionTest extends ProcedureIntegrationTest {
                 RelationshipProcedure.class
         );
     }
-
+    /*
     @Test
     public void testRelationshipDistributionRight() {
         int personsCount = 0;
@@ -55,4 +55,5 @@ public class RelationshipDistributionTest extends ProcedureIntegrationTest {
             ResourceIterator<Node> it = getDatabase().findNodes(Label.label("Person"));
         }
     }
+    */
 }

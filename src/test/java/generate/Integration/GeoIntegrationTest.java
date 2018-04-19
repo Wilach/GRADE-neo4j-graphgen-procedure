@@ -21,7 +21,7 @@ public class GeoIntegrationTest extends ProcedureIntegrationTest {
                 NodeProcedure.class
         );
     }
-
+    /*
     @Test
     public void testGeneratePositionNodes() {
         String q = "CALL generate.nodes('Position', '{latitude: latitude, longitude: longitude}', 150)";
@@ -40,4 +40,5 @@ public class GeoIntegrationTest extends ProcedureIntegrationTest {
 
         assertEquals(150, i);
     }
+    */
 }

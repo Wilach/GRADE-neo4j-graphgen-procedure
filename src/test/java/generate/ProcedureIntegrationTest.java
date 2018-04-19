@@ -17,7 +17,7 @@ import java.util.Map;
 public abstract class ProcedureIntegrationTest {
 
     private GraphDatabaseService db;
-
+    
     @Before
     public void setUp() throws Exception {
         db = new TestGraphDatabaseFactory().newImpermanentDatabase();

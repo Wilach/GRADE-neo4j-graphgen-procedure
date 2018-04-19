@@ -20,6 +20,7 @@ import com.graphaware.neo4j.graphgen.YamlParser;
 import com.graphaware.neo4j.graphgen.faker.FakerService;
 import com.graphaware.neo4j.graphgen.graph.Property;
 import com.graphaware.neo4j.graphgen.util.CountSyntaxUtil;
+import com.graphaware.neo4j.graphgen.util.LabelsUtil;
 import com.graphaware.neo4j.graphgen.util.ShuffleUtil;
 import generate.result.GraphResult;
 import org.neo4j.graphdb.*;
@@ -107,7 +108,9 @@ public class GraphGenerator {
     }
     
     public List<Node> asdGenerateNodeTest(Label[] labels, String propertiesString, long number){
-    	String testString = "";
+    	Label testLabel[] = null;
+    	String testString;
+    	List<Node> nodes = new ArrayList<>();
     	try {
     	OPCPackage pkg = OPCPackage.open("C:\\Users\\ownzo\\Documents\\GitHub\\GRADE-neo4j-graphgen-procedure\\test.xlsx");
     	XSSFWorkbook wb = new XSSFWorkbook(pkg);
@@ -129,31 +132,44 @@ public class GraphGenerator {
                 if(tmp > cols) cols = tmp;
             }
         }
-
+        
         for(int r = 0; r < rows; r++) {
             row = sheet.getRow(r);
+            String propertyStrings = "";
+            Node testNode;
             if(row != null) {
                 for(int c = 0; c < cols; c++) {
                     cell = row.getCell(c);
                     if(cell != null) {
                         // Your code here
                     	testString = cell.toString();
+                    	if(c == 0) {
+                    		testLabel = LabelsUtil.fromInput(testString);
+                    	}
+                    	else {
+                    		propertyStrings += testString + " ";
+                    	}
                     }
                 }
+                testNode = database.createNode(testLabel);
+        		for(Property property : getProperties(propertyStrings)) {
+        			testNode.setProperty(property.key(), property);
+        		}
+        		nodes.add(testNode);
             }
         }
         pkg.close();
     	}catch (Exception ioe) {
     		ioe.printStackTrace();
     	}
-    	 List<Node> nodes = new ArrayList<>();
+    	/* 
          for (int i = 0; i < number; ++i) {
              Node node = database.createNode(labels);
              for (Property property : getProperties(propertiesString)) {
                  node.setProperty(property.key(), testString);
              }
              nodes.add(node);
-         }
+         }*/
 
          return nodes;
     }
