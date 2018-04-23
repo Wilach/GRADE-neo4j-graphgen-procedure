@@ -107,58 +107,54 @@ public class GraphGenerator {
         return new GraphResult(nodes, relationships);
     }
     
-    public List<Node> asdGenerateNodeTest(Label[] labels, String propertiesString, long number){
+    public List<Node> asdGenerateNodeTest2(Label[] labels, String propertiesString, long number){
     	Label testLabel[] = null;
     	String testString;
     	List<Node> nodes = new ArrayList<>();
     	try {
-    	OPCPackage pkg = OPCPackage.open("C:\\Users\\ownzo\\Documents\\GitHub\\GRADE-neo4j-graphgen-procedure\\test.xlsx");
-    	XSSFWorkbook wb = new XSSFWorkbook(pkg);
-        XSSFSheet sheet = wb.getSheetAt(0);
-        XSSFRow row;
-        XSSFCell cell;
-
-        int rows; // No of rows
-        rows = sheet.getPhysicalNumberOfRows();
-
-        int cols = 0; // No of columns
-        int tmp = 0;
-
-        // This trick ensures that we get the data properly even if it doesn't start from first few rows
-        for(int i = 0; i < 10 || i < rows; i++) {
-            row = sheet.getRow(i);
-            if(row != null) {
-                tmp = sheet.getRow(i).getPhysicalNumberOfCells();
-                if(tmp > cols) cols = tmp;
-            }
-        }
-        
-        for(int r = 0; r < rows; r++) {
-            row = sheet.getRow(r);
-            String propertyStrings = "";
-            Node testNode;
-            if(row != null) {
-                for(int c = 0; c < cols; c++) {
-                    cell = row.getCell(c);
-                    if(cell != null) {
-                        // Your code here
-                    	testString = cell.toString();
-                    	if(c == 0) {
-                    		testLabel = LabelsUtil.fromInput(testString);
-                    	}
-                    	else {
-                    		propertyStrings += testString + " ";
-                    	}
-                    }
-                }
-                testNode = database.createNode(testLabel);
-        		for(Property property : getProperties(propertyStrings)) {
-        			testNode.setProperty(property.key(), property);
-        		}
-        		nodes.add(testNode);
-            }
-        }
-        pkg.close();
+			OPCPackage pkg = OPCPackage.open("C:\\Users\\wille\\Documents\\GitHub\\GRADE-neo4j-graphgen-procedure\\TestInput.xlsx");
+			XSSFWorkbook wb = new XSSFWorkbook(pkg);
+		    XSSFSheet sheet = wb.getSheetAt(0);
+		    XSSFRow row;
+		    XSSFCell cell;
+		
+		    int rows; // No of rows
+		    rows = sheet.getPhysicalNumberOfRows();
+		
+		    int cols = 0; // No of columns
+		    int tmp = 0;
+		    
+		    for(int r = 0; r < rows; r++) {
+		        row = sheet.getRow(r);
+		    
+		        String propertyStrings = "";
+		        Node testNode;
+		        
+		        wb.setMissingCellPolicy(row.RETURN_BLANK_AS_NULL);
+		        
+		        if(row != null) {
+		        	cols = row.getPhysicalNumberOfCells();
+		            for(int c = 0; c < cols; c++) {
+		                cell = row.getCell(c);
+		                if(cell != null) {
+		                    // Your code here
+		                	testString = cell.toString();
+		                	if(c == 0) {
+		                		testLabel = LabelsUtil.fromInput(testString);
+		                	}
+		                	else {
+		                		propertyStrings += testString + " ";
+		                	}
+		                }
+		            }
+		            testNode = database.createNode(testLabel);
+		    		for(Property property : getProperties(propertyStrings)) {
+		    			testNode.setProperty(property.key(), rows);
+		    		}
+		    		nodes.add(testNode);
+		        }
+		    }
+		    pkg.close();
     	}catch (Exception ioe) {
     		ioe.printStackTrace();
     	}
@@ -173,6 +169,71 @@ public class GraphGenerator {
 
          return nodes;
     }
+    
+    public List<Node> generateDecisionCase(String fileName){
+    	Label testLabel[] = null;
+    	String testString;
+    	List<Node> nodes = new ArrayList<>();
+    	try {
+			OPCPackage pkg = OPCPackage.open("Decision_Cases\\" + fileName);
+			XSSFWorkbook wb = new XSSFWorkbook(pkg);
+		    XSSFSheet sheet = wb.getSheetAt(0);
+		    XSSFRow row;
+		    XSSFCell cell;
+		
+		    int MY_MINIMUM_COLUMN_COUNT = 2;
+		    
+			// Decide which rows to process
+		    int rowStart = Math.min(15, sheet.getFirstRowNum());
+		    int rowEnd = Math.max(1400, sheet.getLastRowNum());
+
+		    for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
+		       row = sheet.getRow(rowNum);
+		       if (row == null) {
+		          // This whole row is empty
+		          // Handle it as needed
+		          continue;
+		       }
+		       
+		       String propertyStrings = "";
+		       Node testNode;
+
+		       int lastColumn = Math.max(row.getLastCellNum(), MY_MINIMUM_COLUMN_COUNT);
+
+		       for (int cn = 0; cn < lastColumn; cn++) {
+		          cell = row.getCell(cn, XSSFRow.RETURN_BLANK_AS_NULL);
+		          if (cell == null) {
+		             // The spreadsheet is empty in this cell
+		        	 
+		          } else {
+		             // Do something useful with the cell's contents
+		        	// Your code here
+                	testString = cell.toString();
+                	if(cn == 0) {
+                		testLabel = LabelsUtil.fromInput(testString);
+                	}
+                	else {
+                		propertyStrings += testString + " ";
+                	}
+                	
+		          }
+		       }
+		       testNode = database.createNode(testLabel);
+		       for(Property property : getProperties(propertyStrings)) {
+	    			testNode.setProperty(property.key(), property.generatorName());
+	    		}
+	    		nodes.add(testNode);
+		    }
+		    
+		    pkg.close();
+		    
+    	}catch (Exception ioe) {
+    		ioe.printStackTrace();
+    	}
+        
+    	return nodes;
+    }
+
 
     private List<Property> getProperties(String definition) {
         if (definition.equals("''") || definition.equals("'{}'") || definition.equals("") || definition.equals("{}")) {
