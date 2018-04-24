@@ -72,28 +72,78 @@ public class GraphGenerator {
     }
 
 
-    public List<Relationship> generateRelationships(List<Node> from, List<Node> to, String relationshipType, String properties, String fromCount, String toCount) {
+    public List<Relationship> generateRelationships(String fileName) {
         List<Relationship> list = new ArrayList<>();
-        if (from.isEmpty() || to.isEmpty()) {
-            return list;
-        }
+        List<Property> propertyList;
+        
+        
+        Label label[] = null;
+        
+        try {
+			OPCPackage pkg = OPCPackage.open("Decision_Cases\\" + fileName);
+			XSSFWorkbook wb = new XSSFWorkbook(pkg);
+		    XSSFSheet sheet = wb.getSheetAt(0);
+		    XSSFRow row;
+		    XSSFCell cell;
+		
+		    int MY_MINIMUM_COLUMN_COUNT = 2;
+		    
+			// Decide which rows to process
+		    int rowStart = Math.min(15, sheet.getFirstRowNum());
+		    int rowEnd = Math.max(1400, sheet.getLastRowNum());
 
-        List<Property> propertyList = getProperties(properties);
-        int fromS = CountSyntaxUtil.getCount(fromCount, random);
+		    for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
+		       row = sheet.getRow(rowNum);
+		       if (row == null) {
+		          // This whole row is empty
+		          // Handle it as needed
+		          continue;
+		       }
+		       
+		       String relationshipType = "", properties = "", cellString;
+		       Node fromNode = null, toNode = null;
 
-        List<Integer> fromNodes = ShuffleUtil.shuffle(from, fromS);
-        for (int i : fromNodes) {
-            int toS = CountSyntaxUtil.getCount(toCount, random);
-            List<Integer> toNodes = ShuffleUtil.shuffle(to, toS);
-            Node start = from.get(i);
-            for (int e : toNodes) {
-                Node end = to.get(e);
-                Relationship r = start.createRelationshipTo(end, RelationshipType.withName(relationshipType));
-                addRelationshipProperties(r, propertyList);
-                list.add(r);
-            }
-        }
+		       int lastColumn = Math.max(row.getLastCellNum(), MY_MINIMUM_COLUMN_COUNT);
 
+		       for (int cn = 0; cn < lastColumn; cn++) {
+		          cell = row.getCell(cn, XSSFRow.RETURN_BLANK_AS_NULL);
+		          if (cell == null) {
+		             // The spreadsheet is empty in this cell
+		        	 
+		          } else {
+		             // Do something useful with the cell's contents
+		        	// Your code here
+                	cellString = cell.toString();
+                	if(cn == 2) {
+                		relationshipType = cellString;
+                	}
+                	else if(cn == 0){
+                		fromNode = database.findNode(null, "id", cellString);
+                	}
+                	else if(cn == 1) {
+                		toNode = database.findNode(null, "id", cellString);
+                	}
+                	else if(cn > 2) {
+                		properties += cellString + " ";
+                	}
+                	
+		          }
+		       }
+		       propertyList = getProperties(properties);
+		        
+		       Relationship r = fromNode.createRelationshipTo(toNode, RelationshipType.withName(relationshipType));
+		       addRelationshipProperties(r, propertyList);
+		       list.add(r);
+		    }
+		    
+		    pkg.close();
+		    wb.close();
+    	}catch (Exception ioe) {
+    		ioe.printStackTrace();
+    	}
+        
+        
+        
         return list;
     }
 
