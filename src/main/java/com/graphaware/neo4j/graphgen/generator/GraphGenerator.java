@@ -70,6 +70,31 @@ public class GraphGenerator {
 
         return nodes;
     }
+    
+    public List<Relationship> oldGenerateRelationships(List<Node> from, List<Node> to, String relationshipType, String properties, String fromCount, String toCount) {
+        List<Relationship> list = new ArrayList<>();
+        if (from.isEmpty() || to.isEmpty()) {
+            return list;
+        }
+
+        List<Property> propertyList = getProperties(properties);
+        int fromS = CountSyntaxUtil.getCount(fromCount, random);
+
+        List<Integer> fromNodes = ShuffleUtil.shuffle(from, fromS);
+        for (int i : fromNodes) {
+            int toS = CountSyntaxUtil.getCount(toCount, random);
+            List<Integer> toNodes = ShuffleUtil.shuffle(to, toS);
+            Node start = from.get(i);
+            for (int e : toNodes) {
+                Node end = to.get(e);
+                Relationship r = start.createRelationshipTo(end, RelationshipType.withName(relationshipType));
+                addRelationshipProperties(r, propertyList);
+                list.add(r);
+            }
+        }
+
+        return list;
+    }
 
 
     public List<Relationship> generateRelationships(String fileName) {

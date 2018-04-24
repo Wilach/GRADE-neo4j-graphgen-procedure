@@ -29,8 +29,8 @@ public class RelationshipProcedure extends GraphgenProcedure {
 
     @Procedure
     @PerformsWrites
-    public Stream<RelationshipListResult> relationships(@Name("from") List<Node> from, @Name("to") List<Node> to, @Name("relationshipType") String relationshipType, @Name("properties") String properties, @Name("fromCount") Object fromCount, @Name("toCount") Object toCount) {
-        return Stream.of(new RelationshipListResult(getGraphgenService().graphGenerator().generateRelationships(from, to, relationshipType, properties, fromCount.toString(), toCount.toString())));
+    public Stream<RelationshipListResult> relationships(@Name("file") String fileName) {
+        return Stream.of(new RelationshipListResult(getGraphgenService().graphGenerator().generateRelationships(fileName)));
     }
 
 }
