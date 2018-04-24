@@ -125,7 +125,7 @@ public class GraphGenerator {
 		          continue;
 		       }
 		       
-		       String relationshipType = "", properties = "", cellString;
+		       String relationshipType = "", properties = "", nodeLabelFrom = "", nodeLabelTo = "", cellString;
 		       Node fromNode = null, toNode = null;
 
 		       int lastColumn = Math.max(row.getLastCellNum(), MY_MINIMUM_COLUMN_COUNT);
@@ -137,18 +137,26 @@ public class GraphGenerator {
 		        	 
 		          } else {
 		             // Do something useful with the cell's contents
-		        	// Your code here
                 	cellString = cell.toString();
-                	if(cn == 2) {
+                	if(cn == 4) {
                 		relationshipType = cellString;
                 	}
                 	else if(cn == 0){
-                		fromNode = database.findNode(null, "id", cellString);
+                		nodeLabelFrom = cellString;
+                		
                 	}
                 	else if(cn == 1) {
-                		toNode = database.findNode(null, "id", cellString);
+                		fromNode = database.findNode(Label.label(nodeLabelFrom), "name", cellString);
+                		
                 	}
-                	else if(cn > 2) {
+                	else if(cn == 2) {
+                		nodeLabelTo = cellString;
+                		
+                	}
+                	else if(cn == 3) {
+                		toNode = database.findNode(Label.label(nodeLabelTo), "name", cellString);
+                	}
+                	else if(cn > 4) {
                 		properties += cellString + " ";
                 	}
                 	
@@ -319,7 +327,7 @@ public class GraphGenerator {
 
     private void addRelationshipProperties(Relationship relationship, List<Property> properties) {
         for (Property property : properties) {
-            relationship.setProperty(property.key(), fakerService.getValue(property));
+            relationship.setProperty(property.key(), property.generatorName());
         }
     }
 
