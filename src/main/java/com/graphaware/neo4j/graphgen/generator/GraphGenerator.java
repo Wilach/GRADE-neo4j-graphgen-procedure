@@ -114,7 +114,7 @@ public class GraphGenerator {
 		    int MY_MINIMUM_COLUMN_COUNT = 2;
 		    
 			// Decide which rows to process
-		    int rowStart = Math.min(15, sheet.getFirstRowNum());
+		    int rowStart = 1;
 		    int rowEnd = Math.max(1400, sheet.getLastRowNum());
 
 		    for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
@@ -125,7 +125,7 @@ public class GraphGenerator {
 		          continue;
 		       }
 		       
-		       String relationshipType = "", properties = "", nodeLabelFrom = "", nodeLabelTo = "", cellString;
+		       String relationshipType = "", properties = "{", nodeLabelFrom = "", nodeLabelTo = "", cellString;
 		       Node fromNode = null, toNode = null;
 
 		       int lastColumn = Math.max(row.getLastCellNum(), MY_MINIMUM_COLUMN_COUNT);
@@ -157,11 +157,22 @@ public class GraphGenerator {
                 		toNode = database.findNode(Label.label(nodeLabelTo), "name", cellString);
                 	}
                 	else if(cn > 4) {
-                		properties += cellString + " ";
+                		properties += cellString + "," + " ";
                 	}
                 	
 		          }
 		       }
+		       if(properties.length() > 1) {
+			       if(properties.contains(",")) {
+			    	   properties = properties.substring(0, properties.length() - 2);
+			       }
+			       
+			       properties += "}";
+		       }
+		       else {
+		    	   properties = "";
+		       }
+		       
 		       propertyList = getProperties(properties);
 		        
 		       Relationship r = fromNode.createRelationshipTo(toNode, RelationshipType.withName(relationshipType));
@@ -238,6 +249,7 @@ public class GraphGenerator {
 		        }
 		    }
 		    pkg.close();
+		    wb.close();
     	}catch (Exception ioe) {
     		ioe.printStackTrace();
     	}
@@ -267,7 +279,7 @@ public class GraphGenerator {
 		    int MY_MINIMUM_COLUMN_COUNT = 2;
 		    
 			// Decide which rows to process
-		    int rowStart = Math.min(15, sheet.getFirstRowNum());
+		    int rowStart = 1;
 		    int rowEnd = Math.max(1400, sheet.getLastRowNum());
 
 		    for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
@@ -278,7 +290,7 @@ public class GraphGenerator {
 		          continue;
 		       }
 		       
-		       String propertyStrings = "";
+		       String propertyStrings = "{";
 		       Node testNode;
 
 		       int lastColumn = Math.max(row.getLastCellNum(), MY_MINIMUM_COLUMN_COUNT);
@@ -296,11 +308,23 @@ public class GraphGenerator {
                 		testLabel = LabelsUtil.fromInput(testString);
                 	}
                 	else {
-                		propertyStrings += testString + " ";
+                		propertyStrings += testString + "," + " ";
                 	}
                 	
 		          }
 		       }
+		       if(propertyStrings.length() > 1) {
+			       if(propertyStrings.contains(",")) {
+			    	   propertyStrings = propertyStrings.substring(0, propertyStrings.length() - 2);
+			       }
+			       
+			       propertyStrings += "}";
+		       }
+		       else {
+		    	   propertyStrings = "";
+		       }
+		       
+		       
 		       testNode = database.createNode(testLabel);
 		       for(Property property : getProperties(propertyStrings)) {
 	    			testNode.setProperty(property.key(), property.generatorName());
@@ -309,6 +333,7 @@ public class GraphGenerator {
 		    }
 		    
 		    pkg.close();
+		    wb.close();
 		    
     	}catch (Exception ioe) {
     		ioe.printStackTrace();
