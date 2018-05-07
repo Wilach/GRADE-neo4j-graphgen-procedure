@@ -205,9 +205,7 @@ public class GraphGenerator {
     	}catch (Exception ioe) {
     		ioe.printStackTrace();
     	}
-        
-        
-        
+
         return list;
     }
 
@@ -221,71 +219,7 @@ public class GraphGenerator {
         return new GraphResult(nodes, relationships);
     }
     
-    public List<Node> asdGenerateNodeTest2(Label[] labels, String propertiesString, long number){
-    	Label testLabel[] = null;
-    	String testString;
-    	List<Node> nodes = new ArrayList<>();
-    	try {
-			OPCPackage pkg = OPCPackage.open("C:\\Users\\wille\\Documents\\GitHub\\GRADE-neo4j-graphgen-procedure\\TestInput.xlsx");
-			XSSFWorkbook wb = new XSSFWorkbook(pkg);
-		    XSSFSheet sheet = wb.getSheetAt(0);
-		    XSSFRow row;
-		    XSSFCell cell;
-		
-		    int rows; // No of rows
-		    rows = sheet.getPhysicalNumberOfRows();
-		
-		    int cols = 0; // No of columns
-		    int tmp = 0;
-		    
-		    for(int r = 0; r < rows; r++) {
-		        row = sheet.getRow(r);
-		    
-		        String propertyStrings = "";
-		        Node testNode;
-		        
-		        wb.setMissingCellPolicy(row.RETURN_BLANK_AS_NULL);
-		        
-		        if(row != null) {
-		        	cols = row.getPhysicalNumberOfCells();
-		            for(int c = 0; c < cols; c++) {
-		                cell = row.getCell(c);
-		                if(cell != null) {
-		                    // Your code here
-		                	testString = cell.toString();
-		                	if(c == 0) {
-		                		testLabel = LabelsUtil.fromInput(testString);
-		                	}
-		                	else {
-		                		propertyStrings += testString + " ";
-		                	}
-		                }
-		            }
-		            testNode = database.createNode(testLabel);
-		    		for(Property property : getProperties(propertyStrings)) {
-		    			testNode.setProperty(property.key(), rows);
-		    		}
-		    		nodes.add(testNode);
-		        }
-		    }
-		    pkg.close();
-		    wb.close();
-    	}catch (Exception ioe) {
-    		ioe.printStackTrace();
-    	}
-    	/* 
-         for (int i = 0; i < number; ++i) {
-             Node node = database.createNode(labels);
-             for (Property property : getProperties(propertiesString)) {
-                 node.setProperty(property.key(), testString);
-             }
-             nodes.add(node);
-         }*/
-
-         return nodes;
-    }
-    
-    public List<Node> generateDecisionCase(String fileName){
+    public List<Node> generateNodesFromFile(String fileName){
     	Label testLabel[] = null;
     	String testString;
     	List<Node> nodes = new ArrayList<>();
@@ -360,6 +294,166 @@ public class GraphGenerator {
     	}
         
     	return nodes;
+    }
+    
+    public GraphResult generateDecisionCase(String nodeFile, String relationshipFile){
+    	List<Relationship> relationships = new ArrayList<>();
+        List<Node> nodes = new ArrayList<>();
+        List<Property> propertyList;
+           
+        Label testLabel[] = null;
+    	String testString;
+    	
+    	try {
+			OPCPackage pkgn = OPCPackage.open("Decision_Cases\\" + nodeFile);
+			XSSFWorkbook wbn = new XSSFWorkbook(pkgn);
+		    XSSFSheet sheetn = wbn.getSheetAt(0);
+		    XSSFRow rown;
+		    XSSFCell celln;
+		
+		    int MY_MINIMUM_COLUMN_COUNT = 2;
+		    
+		    int rowStart = 1;
+		    int rowEnd = Math.max(1400, sheetn.getLastRowNum());
+
+		    for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
+		       rown = sheetn.getRow(rowNum);
+		       if (rown == null) {
+		          continue;
+		       }
+		       
+		       String propertyStrings = "{";
+		       Node testNode;
+
+		       int lastColumn = Math.max(rown.getLastCellNum(), MY_MINIMUM_COLUMN_COUNT);
+
+		       for (int cn = 0; cn < lastColumn; cn++) {
+		          celln = rown.getCell(cn, XSSFRow.RETURN_BLANK_AS_NULL);
+		          if (celln == null) {} 
+		          else {
+                	testString = celln.toString();
+                	if(cn == 0) {
+                		testLabel = LabelsUtil.fromInput(testString);
+                	}
+                	else {
+                		propertyStrings += testString + "," + " ";
+                	}
+                	
+		          }
+		       }
+		       if(propertyStrings.length() > 1) {
+			       if(propertyStrings.contains(",")) {
+			    	   propertyStrings = propertyStrings.substring(0, propertyStrings.length() - 2);
+			       }
+			       
+			       propertyStrings += "}";
+		       }
+		       else {
+		    	   propertyStrings = "";
+		       }
+		       
+		       
+		       testNode = database.createNode(testLabel);
+		       for(Property property : getProperties(propertyStrings)) {
+	    			testNode.setProperty(property.key(), property.generatorName());
+	    		}
+	    		nodes.add(testNode);
+		    }
+		    
+    	}catch (Exception ioe) {
+    		ioe.printStackTrace();
+    	}
+        
+        try {
+			OPCPackage pkg = OPCPackage.open("Decision_Cases\\" + relationshipFile);
+			XSSFWorkbook wb = new XSSFWorkbook(pkg);
+		    XSSFSheet sheet = wb.getSheetAt(0);
+		    XSSFRow row;
+		    XSSFCell cell;
+		
+		    int MY_MINIMUM_COLUMN_COUNT = 2;
+		    
+		    int rowStart = 1;
+		    int rowEnd = Math.max(1400, sheet.getLastRowNum());
+
+		    for (int rowNum = rowStart; rowNum < rowEnd; rowNum++) {
+		       row = sheet.getRow(rowNum);
+		       if (row == null) {
+		          continue;
+		       }
+		       
+		       String relationshipType = "", properties = "{", cellString, symbol = "";
+		       Node fromNode = null, toNode = null;
+
+		       int lastColumn = Math.max(row.getLastCellNum(), MY_MINIMUM_COLUMN_COUNT);
+
+		       for (int cn = 0; cn < lastColumn; cn++) {
+		          cell = row.getCell(cn, XSSFRow.RETURN_BLANK_AS_NULL);
+		          if (cell == null) {
+		          } else {
+                	cellString = cell.toString();
+                	
+                	if(cn == 0){
+                		Node tmp;
+                		for(int i = 0; i<nodes.size(); i++) {
+                			tmp = nodes.get(i);
+                			Object s = tmp.getProperty("name");
+                			if(s.equals(cellString)) {
+                				fromNode = tmp;
+                			}
+                		}
+                	}
+                	else if(cn == 1) {
+                		symbol = cellString;
+                	}
+                	else if(cn == 2) {
+                		Node tmp;
+                		for(int i = 0; i<nodes.size(); i++) {
+                			tmp = nodes.get(i);
+                			Object s = tmp.getProperty("name", null);
+                			Object t = tmp.getProperty("symbol", null);
+                			
+                			if(t != null) {
+	            				if(t.equals(symbol)){
+	                				toNode = tmp;
+	                			}	
+                			}
+                			else if(s != null) {
+                				if(s.equals(cellString)) {
+                    				toNode = tmp;
+                    			}
+                			}
+                		}
+                	}
+                	else if(cn == 3) {
+                		relationshipType = cellString;
+                	}	
+                	else if(cn >= 4) {
+                		properties += cellString + "," + " ";
+                	}	
+		          }
+		       }
+		       if(properties.length() > 1) {
+			       if(properties.contains(",")) {
+			    	   properties = properties.substring(0, properties.length() - 2);
+			       }
+			       
+			       properties += "}";
+		       }
+		       else {
+		    	   properties = "";
+		       }
+		       
+		       propertyList = getProperties(properties);
+		        
+		       Relationship r = fromNode.createRelationshipTo(toNode, RelationshipType.withName(relationshipType));
+		       addRelationshipProperties(r, propertyList);
+		       relationships.add(r);
+		    }
+    	}catch (Exception ioe) {
+    		ioe.printStackTrace();
+    	}
+        return new GraphResult(nodes, relationships);
     }
 
 

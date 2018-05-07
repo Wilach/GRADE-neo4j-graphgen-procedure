@@ -16,26 +16,21 @@
 
 package generate;
 
-import com.graphaware.neo4j.graphgen.util.LabelsUtil;
-import generate.GraphgenProcedure;
-import generate.result.NodeListResult;
-import org.neo4j.logging.Log;
-import org.neo4j.procedure.Context;
+import generate.result.GraphResult;
+import generate.result.ValueListResult;
 import org.neo4j.procedure.Name;
 import org.neo4j.procedure.PerformsWrites;
 import org.neo4j.procedure.Procedure;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
-public class NodeProcedure extends GraphgenProcedure {
+public class GenerateDecisionCaseProcedure extends GraphgenProcedure {
 
-    @Context
-    public Log log;
-
-    @Procedure
+	@Procedure
     @PerformsWrites
-    public Stream<NodeListResult> nodes(@Name("file") String fileName) {
-        log.warn(fileName.toString());
-        return Stream.of(new NodeListResult(getGraphgenService().graphGenerator().generateNodesFromFile(fileName)));
+    public Stream<GraphResult> generateDecisionCase(@Name("file") String nodeFileName, @Name("file2") String relationshipsFileName) {
+        return Stream.of(getGraphgenService().graphGenerator().generateDecisionCase(nodeFileName, relationshipsFileName));
     }
 }
