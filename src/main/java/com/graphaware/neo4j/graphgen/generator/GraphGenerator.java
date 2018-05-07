@@ -95,7 +95,27 @@ public class GraphGenerator {
 
         return list;
     }
-
+    
+    public GraphResult generateArtificialDecisionCase(String fileName) {
+    	List<Relationship> relationships = new ArrayList<>();
+    	List<Node> nodes = new ArrayList<>();
+    	Label label[] = null;
+    	
+    	label = LabelsUtil.fromInput("TestLabel1");
+    	
+    	Node n, m;
+    	n = database.createNode(label);
+    	nodes.add(n);
+    	
+    	label = LabelsUtil.fromInput("TestLabel2");
+    	m = database.createNode(label);
+    	nodes.add(m);
+    	
+    	Relationship r = n.createRelationshipTo(m, RelationshipType.withName("RELATED"));
+        relationships.add(r);
+    	
+    	return new GraphResult(nodes, relationships);
+    }
 
     public List<Relationship> generateRelationships(String fileName) {
         List<Relationship> list = new ArrayList<>();
