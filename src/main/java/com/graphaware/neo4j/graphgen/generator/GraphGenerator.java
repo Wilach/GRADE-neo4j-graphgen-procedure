@@ -95,27 +95,6 @@ public class GraphGenerator {
 
         return list;
     }
-    
-    public GraphResult generateArtificialDecisionCase(String fileName) {
-    	List<Relationship> relationships = new ArrayList<>();
-    	List<Node> nodes = new ArrayList<>();
-    	Label label[] = null;
-    	
-    	label = LabelsUtil.fromInput("TestLabel1");
-    	
-    	Node n, m;
-    	n = database.createNode(label);
-    	nodes.add(n);
-    	
-    	label = LabelsUtil.fromInput("TestLabel2");
-    	m = database.createNode(label);
-    	nodes.add(m);
-    	
-    	Relationship r = n.createRelationshipTo(m, RelationshipType.withName("RELATED"));
-        relationships.add(r);
-    	
-    	return new GraphResult(nodes, relationships);
-    }
 
     public List<Relationship> generateRelationships(String fileName) {
         List<Relationship> list = new ArrayList<>();
@@ -286,9 +265,6 @@ public class GraphGenerator {
 	    		nodes.add(testNode);
 		    }
 		    
-		    pkg.close();
-		    wb.close();
-		    
     	}catch (Exception ioe) {
     		ioe.printStackTrace();
     	}
@@ -454,6 +430,68 @@ public class GraphGenerator {
     		ioe.printStackTrace();
     	}
         return new GraphResult(nodes, relationships);
+    }
+    public GraphResult generateArtificialDecisionCases(long number) {
+    	List<Relationship> relationships = new ArrayList<>();
+    	List<Node> decisionCaseNodes = new ArrayList<>();
+    	List<Node> relationshipNodes = new ArrayList<>();
+    	
+    	
+    	if(number > 20)
+    		number = 20;
+    	
+    	
+    	for(int i = 0; i < number; i++) {
+    		Node tmp;
+    		
+    		String s = String.valueOf(fakerService.randomLong(3, true));
+        	String propertyString = "{name: Case " + s + "}";
+        	
+    		tmp = database.createNode(Label.label("DECISION_CASE"));
+    		for(Property property : getProperties(propertyString)) {
+    			tmp.setProperty(property.key(), property.generatorName());
+    		}
+    		decisionCaseNodes.add(tmp);
+    	}
+    	
+    	
+    	relationshipNodes = generateNodesFromFile("Properties_Input.xlsx");
+    	
+    	for(Node n : decisionCaseNodes) {
+    		Iterable<Label> relLabel;
+    		String first = relationshipNodes.get(0).getLabels().toString();
+    		int relcount = 0;
+    		for(int j = 0; j<relationshipNodes.size() ; j++) {
+    			Node m = relationshipNodes.get(j);
+    			String current = m.getLabels().toString();
+    			if(!first.equals(current)) {
+    				first = current;
+    				if(relcount == 0) {
+    					//make relationship
+    					Node b = relationshipNodes.get(--j);
+    					Relationship r = n.createRelationshipTo(b, RelationshipType.withName(String.valueOf(m.getProperty("relationship"))));
+        		    	relationships.add(r);
+    				}
+    				relcount = 0;
+    				
+    			}
+    			else {
+    				int rnd = random.nextInt(100);
+	    			if(rnd < 50) {
+	    				//make relationship
+	    				Relationship r = n.createRelationshipTo(m, RelationshipType.withName(String.valueOf(m.getProperty("relationship"))));
+	    		    	relationships.add(r);
+	    				relcount++;
+	    			}
+    			}
+    		}
+    	}
+    	for(Node nds : relationshipNodes) {
+    		nds.removeProperty("relationship");
+    	}
+    	
+    	return new GraphResult(decisionCaseNodes, relationships);
+    	
     }
 
 

@@ -30,8 +30,8 @@ public class ArtificialDecisionCaseProcedure extends GraphgenProcedure {
 
 	@Procedure
     @PerformsWrites
-    public Stream<GraphResult> artificialDecisionCase(@Name("file") String fileName) {
-        return Stream.of(getGraphgenService().graphGenerator().generateArtificialDecisionCase(fileName));
+    public Stream<GraphResult> artificialDecisionCases(@Name("numberOfCases") long numberOfCases) {
+        return Stream.of(getGraphgenService().graphGenerator().generateArtificialDecisionCases(numberOfCases));
     }
 
 }
