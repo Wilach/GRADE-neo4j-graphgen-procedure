@@ -483,12 +483,14 @@ public class GraphGenerator {
     				int rnd = random.nextInt(100);
 	    			if(rnd < 50) {
 	    				//make relationship
+	    				
 	    				Relationship r = n.createRelationshipTo(m, RelationshipType.withName(String.valueOf(m.getProperty("relationship"))));
 	    		    	relationships.add(r);
 	    				relcount++;
 	    				
-	    				int rndDuplicate = random.nextInt(100);
-	    				if(rndDuplicate < 50) {
+	    				int numberOfRelationships = random.nextInt(2) + 1;
+	    				
+	    				for(int k = 0; k < numberOfRelationships ; k++) {
 	    					Node tmp;
 	    		    		
 	    		    		String s = String.valueOf(random.nextInt(10));
@@ -505,6 +507,17 @@ public class GraphGenerator {
 	    					Relationship r2 = n.createRelationshipTo(tmp, RelationshipType.withName(String.valueOf(m.getProperty("relationship"))));
 		    		    	relationships.add(r2);
 		    				relcount++;
+		    				
+		    				
+	    					int randomCaseIndex = random.nextInt(decisionCaseNodes.size() - 1);
+	    					Node randomCaseNode = decisionCaseNodes.get(randomCaseIndex);
+	    					if(!randomCaseNode.equals(n)) {
+		    					Relationship ar = randomCaseNode.createRelationshipTo(tmp, RelationshipType.withName(String.valueOf(m.getProperty("relationship"))));
+		    					if(!relationships.contains(ar)) {
+			    					relationships.add(ar);
+			    					relcount++;
+		    					}
+	    					}
 	    				}
 	    			}
     			}
