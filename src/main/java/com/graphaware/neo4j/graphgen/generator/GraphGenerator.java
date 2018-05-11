@@ -438,6 +438,7 @@ public class GraphGenerator {
     	List<Relationship> relationships = new ArrayList<>();
     	List<Node> decisionCaseNodes = new ArrayList<>();
     	List<Node> relationshipNodes = new ArrayList<>();
+    	List<Node> additionalRelationshipNodes = new ArrayList<>();
     	
     	
     	if(number > 20)
@@ -485,6 +486,26 @@ public class GraphGenerator {
 	    				Relationship r = n.createRelationshipTo(m, RelationshipType.withName(String.valueOf(m.getProperty("relationship"))));
 	    		    	relationships.add(r);
 	    				relcount++;
+	    				
+	    				int rndDuplicate = random.nextInt(100);
+	    				if(rndDuplicate < 50) {
+	    					Node tmp;
+	    		    		
+	    		    		String s = String.valueOf(random.nextInt(10));
+	    		    		String prop = "{name: " + m.getProperty("name") + "}";
+	    		    		
+	    		        	
+	    		    		tmp = database.createNode(Label.label((m.getLabels().toString())));
+	    		    		for(Property p : getProperties(prop)) {
+	    		    			tmp.setProperty(p.key(), p.generatorName() + s);
+	    		    		}
+	    		    		additionalRelationshipNodes.add(tmp);
+	    		    		
+	    		    		
+	    					Relationship r2 = n.createRelationshipTo(tmp, RelationshipType.withName(String.valueOf(m.getProperty("relationship"))));
+		    		    	relationships.add(r2);
+		    				relcount++;
+	    				}
 	    			}
     			}
     		}
@@ -493,6 +514,7 @@ public class GraphGenerator {
     		nds.removeProperty("relationship");
     	}
     	decisionCaseNodes.addAll(relationshipNodes);
+    	decisionCaseNodes.addAll(additionalRelationshipNodes);
     	return new GraphResult(decisionCaseNodes, relationships);
     	
     }
