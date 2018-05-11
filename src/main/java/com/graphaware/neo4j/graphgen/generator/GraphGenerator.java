@@ -260,6 +260,9 @@ public class GraphGenerator {
 		       
 		       testNode = database.createNode(testLabel);
 		       for(Property property : getProperties(propertyStrings)) {
+		    	   if(property.generatorName().equals("System End-user") || property.generatorName().equals("Decision Stakeholder"))
+		    		   testNode.setProperty(property.key(), fakerService.getValue(property));
+		    	   else
 	    			testNode.setProperty(property.key(), property.generatorName());
 	    		}
 	    		nodes.add(testNode);
@@ -489,7 +492,7 @@ public class GraphGenerator {
     	for(Node nds : relationshipNodes) {
     		nds.removeProperty("relationship");
     	}
-    	
+    	decisionCaseNodes.addAll(relationshipNodes);
     	return new GraphResult(decisionCaseNodes, relationships);
     	
     }

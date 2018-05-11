@@ -53,6 +53,10 @@ public class FakerService {
 
     // Company
     private static final String COMPANY_NAME = "companyName";
+    
+    //Decision Case
+    private static final String SYSTEM_END_USER = "System End-user";
+    private static final String DECISION_STAKEHOLDER = "Decision Stakeholder";
 
     // Internet
     private static final String AVATAR_URL = "avatarUrl";
@@ -102,6 +106,12 @@ public class FakerService {
                 return faker.name().lastName();
             case FULLNAME:
                 return faker.name().fullName();
+                
+            // Decision Case
+            case DECISION_STAKEHOLDER:
+            	return decisionStakeholder();
+            case SYSTEM_END_USER:
+            	return faker.company().name();
 
             // Address
             case COUNTRY:
@@ -175,6 +185,32 @@ public class FakerService {
                 random.nextInt(256),
                 random.nextInt(256)
         );
+    }
+    public String decisionStakeholder() {
+    	int rnd = random.nextInt(100);
+    	if(rnd < 10)
+    		return "CEO";
+    	else if(rnd < 20)
+    		return "CTO";
+    	else if(rnd < 30)
+    		return "Executive manager";
+    	else if(rnd < 40)
+    		return "Buisness Experts";
+    	else if(rnd < 50)
+    		return "Top middle management";
+    	else if(rnd < 60)
+    		return "Researcher";
+    	else if(rnd < 70)
+    		return "Process/Business Analyst";
+    	else if(rnd < 80)
+    		return "Senior developers";
+    	else if(rnd < 90)
+    		return "Technical expert";
+    	else if(rnd < 100)
+    		return "Economical Experts";
+    		
+    	return "Decision StakeHolder " + String.valueOf(random.nextInt(50));
+    		
     }
 
     public long unixTime() {
