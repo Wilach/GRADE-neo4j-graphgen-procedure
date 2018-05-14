@@ -26,6 +26,7 @@ import generate.result.GraphResult;
 import org.neo4j.graphdb.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import org.apache.poi.xssf.usermodel.*;
@@ -40,6 +41,29 @@ public class GraphGenerator {
     private final FakerService fakerService;
 
     private final Random random;
+    
+    private static final List<String> extraRelationshipExceptions = Arrays.asList(
+    		new String("Innovation and Learning"),
+    		new String("Strategic"),
+    		new String("Tactical"),
+    		new String("Operational"),
+    		new String("Reuse"),
+    		new String("Adapt"),
+    		new String("Buy"),
+    		new String("Develop"),
+    		new String("In-house"),
+    		new String("Outsource"),
+    		new String("Open Source"),
+    		new String("COTS"),
+    		new String("Project-based"),
+    		new String("Inner Source"),
+    		new String("Subcontracting"),
+    		new String("Crowd-source"),
+    		new String("Expert-based"),
+    		new String("Memory-based"),
+    		new String("Parametric"),
+    		new String("Non-parametric")
+    		);
 
     public GraphGenerator(GraphDatabaseService database, FakerService fakerService) {
         this.database = database;
@@ -260,10 +284,7 @@ public class GraphGenerator {
 		       
 		       testNode = database.createNode(testLabel);
 		       for(Property property : getProperties(propertyStrings)) {
-		    	   if(property.generatorName().equals("System End-user") || property.generatorName().equals("Decision Stakeholder"))
 		    		   testNode.setProperty(property.key(), fakerService.getValue(property));
-		    	   else
-	    			testNode.setProperty(property.key(), property.generatorName());
 	    		}
 	    		nodes.add(testNode);
 		    }
@@ -473,7 +494,7 @@ public class GraphGenerator {
     				if(relcount == 0) {
     					//make relationship
     					Node b = relationshipNodes.get(--j);
-    					Relationship r = n.createRelationshipTo(b, RelationshipType.withName(String.valueOf(m.getProperty("relationship"))));
+    					Relationship r = n.createRelationshipTo(b, RelationshipType.withName(String.valueOf(b.getProperty("relationship"))));
         		    	relationships.add(r);
     				}
     				relcount = 0;
@@ -490,34 +511,37 @@ public class GraphGenerator {
 	    				
 	    				int numberOfRelationships = random.nextInt(2) + 1;
 	    				
-	    				for(int k = 0; k < numberOfRelationships ; k++) {
-	    					Node tmp;
-	    		    		
-	    		    		String s = String.valueOf(random.nextInt(10));
-	    		    		String prop = "{name: " + m.getProperty("name") + "}";
-	    		    		
-	    		        	
-	    		    		tmp = database.createNode(Label.label((m.getLabels().toString())));
-	    		    		for(Property p : getProperties(prop)) {
-	    		    			tmp.setProperty(p.key(), p.generatorName() + s);
-	    		    		}
-	    		    		additionalRelationshipNodes.add(tmp);
-	    		    		
-	    		    		
-	    					Relationship r2 = n.createRelationshipTo(tmp, RelationshipType.withName(String.valueOf(m.getProperty("relationship"))));
-		    		    	relationships.add(r2);
-		    				relcount++;
-		    				
-		    				
-	    					int randomCaseIndex = random.nextInt(decisionCaseNodes.size() - 1);
-	    					Node randomCaseNode = decisionCaseNodes.get(randomCaseIndex);
-	    					if(!randomCaseNode.equals(n)) {
-		    					Relationship ar = randomCaseNode.createRelationshipTo(tmp, RelationshipType.withName(String.valueOf(m.getProperty("relationship"))));
-		    					if(!relationships.contains(ar)) {
-			    					relationships.add(ar);
-			    					relcount++;
+	    				if(!extraRelationshipExceptions.contains(String.valueOf(m.getProperty("name")))) {
+	    				
+		    				for(int k = 0; k < numberOfRelationships ; k++) {
+		    					Node tmp;
+		    		    		
+		    		    		String s = String.valueOf(random.nextInt(10));
+		    		    		String prop = "{name: " + m.getProperty("name") + "}";
+		    		    		
+		    		        	
+		    		    		tmp = database.createNode(Label.label((m.getLabels().toString())));
+		    		    		for(Property p : getProperties(prop)) {
+		    		    			tmp.setProperty(p.key(), fakerService.getValue(p) + " " + s);
+		    		    		}
+		    		    		additionalRelationshipNodes.add(tmp);
+		    		    		
+		    		    		
+		    					Relationship r2 = n.createRelationshipTo(tmp, RelationshipType.withName(String.valueOf(m.getProperty("relationship"))));
+			    		    	relationships.add(r2);
+			    				relcount++;
+			    				
+			    				
+		    					int randomCaseIndex = random.nextInt(decisionCaseNodes.size() - 1);
+		    					Node randomCaseNode = decisionCaseNodes.get(randomCaseIndex);
+		    					if(!randomCaseNode.equals(n)) {
+			    					Relationship ar = randomCaseNode.createRelationshipTo(tmp, RelationshipType.withName(String.valueOf(m.getProperty("relationship"))));
+			    					if(!relationships.contains(ar)) {
+				    					relationships.add(ar);
+				    					relcount++;
+			    					}
 		    					}
-	    					}
+		    				}
 	    				}
 	    			}
     			}

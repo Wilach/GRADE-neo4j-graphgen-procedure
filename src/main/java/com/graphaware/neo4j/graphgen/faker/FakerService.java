@@ -57,6 +57,41 @@ public class FakerService {
     //Decision Case
     private static final String SYSTEM_END_USER = "System End-user";
     private static final String DECISION_STAKEHOLDER = "Decision Stakeholder";
+    private static final String GOAL_VALUE = "Goal Value";
+    private static final String FINANCIAL = "Financial";
+    private static final String INTERNAL_BUSINESS = "Internal Business";
+    private static final String INNOVATION_AND_LEARNING = "Innovation and Learning";
+    private static final String MARKET = "Market";
+    private static final String ASSET_SUPPLIER = "Asset Supplier";
+    private static final String ASSET_USER_SYSTEM = "Asset User System";
+    private static final String STRATEGIC = "Strategic";
+    private static final String TACTICAL = "Tactical";
+    private static final String OPERATIONAL = "Operational";
+    private static final String REUSE = "REUSE";
+    private static final String ADAPT = "Adapt";
+    private static final String BUY = "Buy";
+    private static final String DEVELOP = "Develop";
+    private static final String IN_HOUSE = "In-house";
+    private static final String OUTSOURCE = "Outsource";
+    private static final String OPEN_SOURCE = "Open Source";
+    private static final String COTS = "COTS";
+    private static final String PROJECT_BASED = "Project-based";
+    private static final String INNER_SOURCE = "Inner Source";
+    private static final String SUBCONTRACTING = "Subcontracting";
+    private static final String CROWD_SOURCE = "Crowd-source";
+    private static final String EXPERT_BASED = "Expert-based";
+    private static final String MEMORY_BASED = "Memory-based";
+    private static final String PARAMETRIC = "Parametric";
+    private static final String NON_PARAMETRIC = "Non-parametric";
+    private static final String FUNCTIONALITY = "Functionality";
+    private static final String QUALITY = "Quality";
+    private static final String TIME_TO_MARKET = "Time to Market";
+    private static final String RISK = "RISK";
+    private static final String ORGANIZATION = "Organization";
+    private static final String PRODUCT = "Product";
+    private static final String NON_DECISION_STAKEHOLDER = "Stakeholder (non-decision)";
+    private static final String DEVELOPMENT_TECHNOLOGIES = "Development Technologies";
+    private static final String MARKET_AND_BUSINESS = "Market and Business";
 
     // Internet
     private static final String AVATAR_URL = "avatarUrl";
@@ -112,6 +147,76 @@ public class FakerService {
             	return decisionStakeholder();
             case SYSTEM_END_USER:
             	return faker.company().name();
+            case GOAL_VALUE:
+            	return GOAL_VALUE;
+            case FINANCIAL:
+            	return FINANCIAL;
+            case INTERNAL_BUSINESS:
+            	return INTERNAL_BUSINESS;
+            case INNOVATION_AND_LEARNING:
+            	return INNOVATION_AND_LEARNING;
+            case MARKET:
+            	return MARKET;
+            case ASSET_SUPPLIER:
+            	return ASSET_SUPPLIER;
+            case ASSET_USER_SYSTEM:
+            	return ASSET_USER_SYSTEM;
+            case STRATEGIC:
+            	return STRATEGIC;
+            case TACTICAL:
+            	return TACTICAL;
+            case OPERATIONAL:
+            	return OPERATIONAL;
+            case REUSE:
+            	return REUSE;
+            case ADAPT:
+            	return ADAPT;
+            case BUY:
+            	return BUY;
+            case DEVELOP:
+            	return DEVELOP;
+            case IN_HOUSE:
+            	return IN_HOUSE;
+            case OUTSOURCE:
+            	return OUTSOURCE;
+            case OPEN_SOURCE:
+            	return OPEN_SOURCE;
+            case COTS:
+            	return COTS;
+            case PROJECT_BASED:
+            	return PROJECT_BASED;
+            case INNER_SOURCE:
+            	return INNER_SOURCE;
+            case SUBCONTRACTING:
+            	return SUBCONTRACTING;
+            case CROWD_SOURCE:
+            	return CROWD_SOURCE;
+            case EXPERT_BASED:
+            	return EXPERT_BASED;
+            case MEMORY_BASED:
+            	return MEMORY_BASED;
+            case PARAMETRIC:
+            	return PARAMETRIC;
+            case NON_PARAMETRIC:
+            	return NON_PARAMETRIC;
+            case FUNCTIONALITY:
+            	return FUNCTIONALITY;
+            case QUALITY:
+            	return QUALITY;
+            case TIME_TO_MARKET:
+            	return TIME_TO_MARKET;
+            case RISK:
+            	return RISK;
+            case ORGANIZATION:
+            	return faker.company().name();
+            case PRODUCT:
+            	return PRODUCT;
+            case NON_DECISION_STAKEHOLDER:
+            	return decisionStakeholder() + "(non-decision)";
+            case DEVELOPMENT_TECHNOLOGIES:
+            	return "Development Technology";
+            case MARKET_AND_BUSINESS:
+            	return "Market and Business Aspect";
 
             // Address
             case COUNTRY:
@@ -173,7 +278,7 @@ public class FakerService {
             case RANDOM_NUMBER:
                 return randomLong(property);
             default:
-                throw new IllegalArgumentException(String.format("Undefined value generator name '%s'", property.generatorName()));
+                return property.generatorName();
         }
     }
 
