@@ -462,10 +462,6 @@ public class GraphGenerator {
     	List<Node> additionalRelationshipNodes = new ArrayList<>();
     	
     	
-    	if(number > 20)
-    		number = 20;
-    	
-    	
     	for(int i = 0; i < number; i++) {
     		Node tmp;
     		
@@ -530,9 +526,10 @@ public class GraphGenerator {
 		    					Relationship r2 = n.createRelationshipTo(tmp, RelationshipType.withName(String.valueOf(m.getProperty("relationship"))));
 			    		    	relationships.add(r2);
 			    				relcount++;
+			    				int randomCaseIndex = 0;
+			    				if(decisionCaseNodes.size() > 1)
+			    					randomCaseIndex = random.nextInt(decisionCaseNodes.size() - 1);
 			    				
-			    				
-		    					int randomCaseIndex = random.nextInt(decisionCaseNodes.size() - 1);
 		    					Node randomCaseNode = decisionCaseNodes.get(randomCaseIndex);
 		    					if(!randomCaseNode.equals(n)) {
 			    					Relationship ar = randomCaseNode.createRelationshipTo(tmp, RelationshipType.withName(String.valueOf(m.getProperty("relationship"))));

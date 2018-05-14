@@ -208,7 +208,7 @@ public class FakerService {
             case RISK:
             	return RISK;
             case ORGANIZATION:
-            	return faker.company().name();
+            	return ORGANIZATION;
             case PRODUCT:
             	return PRODUCT;
             case NON_DECISION_STAKEHOLDER:
